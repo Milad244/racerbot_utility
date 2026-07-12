@@ -21,6 +21,14 @@ def ensure_session_running() -> None:
     else:
         print(f"tmux session '{SESSION_NAME}' already exists.")
 
+def end_session() -> None:
+    if not has_session(): return
+
+    subprocess.run(
+        ["docker", "exec", CONTAINER_NAME, "tmux", "kill-session", "-t", SESSION_NAME],
+        check=True
+    )
+
 def has_window(window_name: str) -> bool:
     result = subprocess.run(
         ["docker", "exec", CONTAINER_NAME, "tmux", "list-windows", "-t", SESSION_NAME, "-F", "#{window_name}"],
@@ -45,4 +53,9 @@ def send_keys(target: str, command: str) -> None:
     subprocess.run(
         ["docker", "exec", CONTAINER_NAME, "tmux", "send-keys", "-t", target, command, "C-m"],
         check=True
+    )
+
+def attach() -> None:
+    subprocess.run(
+        ["docker", "exec", "-it", CONTAINER_NAME, "tmux", "attach", "-t", SESSION_NAME]
     )

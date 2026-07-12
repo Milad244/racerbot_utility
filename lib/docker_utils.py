@@ -9,7 +9,10 @@ def is_container_running() -> bool:
     return result.returncode == 0 and result.stdout.strip() == "true"
 
 def _start_container() -> None:
-    subprocess.run(["docker", "start", CONTAINER_NAME], check=True)
+    subprocess.run(
+        ["docker", "start", CONTAINER_NAME],
+        check=True
+    )
 
 def ensure_container_running() -> None:
     if not is_container_running():
@@ -17,6 +20,12 @@ def ensure_container_running() -> None:
         _start_container()
     else:
         print(f"Container '{CONTAINER_NAME}' already running.")
+
+def end_container() -> None:
+    subprocess.run(
+        ["docker", "stop", CONTAINER_NAME],
+        check=True
+    )
 
 def dexec(cmd: str) -> subprocess.CompletedProcess:
     return subprocess.run(["docker", "exec", CONTAINER_NAME, "bash", "-c", cmd])
